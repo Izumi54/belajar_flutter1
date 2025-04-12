@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(MyApp());
@@ -34,11 +35,37 @@ class _ProfilPageState extends State<ProfilPage> {
   String umur = '';
   String status = '';
 
-  void simpanProfil() {
+  void simpanProfil() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
     setState(() {
       nama = namaController.text;
       umur = umurController.text;
       status = statusController.text;
+    });
+
+    // Simpan ke SharedPreferences
+    await prefs.setString('nama', nama);
+    await prefs.setString('umur', umur);
+    await prefs.setString('status', status);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadProfil();
+  }
+
+  void loadProfil() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    setState(() {
+      nama = prefs.getString('nama') ?? '';
+      umur = prefs.getString('umur') ?? '';
+      status = prefs.getString('status') ?? '';
+
+      // Isi ke controller juga
+      namaController.text = nama;
+      umurController.text = umur;
+      statusController.text = status;
     });
   }
 
